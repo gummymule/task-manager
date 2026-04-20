@@ -94,7 +94,7 @@ func TestUpdateTask_InvalidStatus(t *testing.T) {
 	})
 
 	assert.Error(t, err)
-	assert.Equal(t, "status must be to_do, in_progress, or completed", err.Error())
+	assert.Equal(t, "status must be to_do, in_progress, or done", err.Error())
 	assert.Nil(t, result)
 }
 

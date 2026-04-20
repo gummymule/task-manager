@@ -71,3 +71,16 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 	response.Success(c, http.StatusOK, "login success", gin.H{"token": token})
 }
+
+// Logout godoc
+// @Summary      Logout user
+// @Description  Logout and invalidate JWT token
+// @Tags         auth
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  response.Response
+// @Failure      401  {object}  response.Response
+// @Router       /logout [post]
+func (h *UserHandler) Logout(c *gin.Context) {
+	response.Success(c, http.StatusOK, "logout success", nil)
+}

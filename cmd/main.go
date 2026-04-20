@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gummymule/task-manager/config"
 	_ "github.com/gummymule/task-manager/docs"
@@ -50,6 +51,14 @@ func main() {
 	// Init router
 	r := gin.Default()
 
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+
 	// Public routes
 	api := r.Group("/api/v1")
 	{
@@ -61,6 +70,7 @@ func main() {
 	auth := api.Group("/")
 	auth.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 	{
+		auth.POST("/logout", userHandler.Logout)
 		auth.GET("/tasks", taskHandler.GetAll)
 		auth.GET("/tasks/:id", taskHandler.GetByID)
 		auth.POST("/tasks", taskHandler.Create)

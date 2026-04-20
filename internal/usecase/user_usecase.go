@@ -57,3 +57,7 @@ func (u *userUsecase) Login(email, password string) (string, error) {
 	}
 	return tokenString, nil
 }
+
+func (u *userUsecase) Logout() error {
+	return nil
+}

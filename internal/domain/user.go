@@ -18,4 +18,5 @@ type UserRepository interface {
 type UserUsecase interface {
 	Register(user *User) (*User, error)
 	Login(email, password string) (string, error)
+	Logout() error
 }

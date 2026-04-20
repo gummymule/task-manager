@@ -49,9 +49,9 @@ func (u *taskUsecase) Update(task *domain.Task) (*domain.Task, error) {
 		return nil, errors.New("title is required")
 	}
 
-	validStatus := map[string]bool{"to_do": true, "in_progress": true, "completed": true}
+	validStatus := map[string]bool{"to_do": true, "in_progress": true, "done": true}
 	if !validStatus[task.Status] {
-		return nil, errors.New("status must be to_do, in_progress, or completed")
+		return nil, errors.New("status must be to_do, in_progress, or done")
 	}
 
 	_, err := u.taskRepo.FindByID(task.ID, task.UserID)
