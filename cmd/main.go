@@ -1,0 +1,78 @@
+package main
+
+import (
+	"log"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gummymule/task-manager/config"
+	_ "github.com/gummymule/task-manager/docs"
+	"github.com/gummymule/task-manager/internal/handler"
+	"github.com/gummymule/task-manager/internal/repository"
+	"github.com/gummymule/task-manager/internal/usecase"
+	"github.com/gummymule/task-manager/pkg/middleware"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+)
+
+// @title           Task Manager API
+// @version         1.0
+// @description     A RESTful API for task management built with Go and Clean Architecture.
+
+// @contact.name    gummymule
+// @contact.url     https://github.com/gummymule
+
+// @host            localhost:8080
+// @BasePath        /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
+
+func main() {
+	// Load config
+	cfg := config.Load()
+
+	// Init database
+	db := cfg.InitDB()
+	defer db.Close()
+
+	// Init layers (repository → usecase → handler)
+	userRepo := repository.NewUserRepository(db)
+	taskRepo := repository.NewTaskRepository(db)
+
+	userUsecase := usecase.NewUserUsecase(userRepo, cfg.JWTSecret)
+	taskUsecase := usecase.NewTaskUsecase(taskRepo)
+
+	userHandler := handler.NewUserHandler(userUsecase)
+	taskHandler := handler.NewTaskHandler(taskUsecase)
+
+	// Init router
+	r := gin.Default()
+
+	// Public routes
+	api := r.Group("/api/v1")
+	{
+		api.POST("/register", userHandler.Register)
+		api.POST("/login", userHandler.Login)
+	}
+
+	// Protected routes
+	auth := api.Group("/")
+	auth.Use(middleware.AuthMiddleware(cfg.JWTSecret))
+	{
+		auth.GET("/tasks", taskHandler.GetAll)
+		auth.GET("/tasks/:id", taskHandler.GetByID)
+		auth.POST("/tasks", taskHandler.Create)
+		auth.PUT("/tasks/:id", taskHandler.Update)
+		auth.DELETE("/tasks/:id", taskHandler.Delete)
+	}
+
+	// Swagger routes
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	log.Printf("Server running on port %s", cfg.AppPort)
+	if err := r.Run(":" + cfg.AppPort); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
+}

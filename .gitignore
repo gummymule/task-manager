@@ -1,0 +1,31 @@
+# Environment
+.env
+
+# Binary
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+task-manager
+
+# Test binary
+*.test
+*.out
+
+# Go workspace
+go.work
+go.work.sum
+
+# Dependency
+vendor/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
