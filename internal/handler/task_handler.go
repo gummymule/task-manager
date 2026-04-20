@@ -30,10 +30,15 @@ func NewTaskHandler(taskUsecase domain.TaskUsecase) *TaskHandler {
 // @Router       /tasks [get]
 func (h *TaskHandler) GetAll(c *gin.Context) {
 	userID := c.GetInt64("user_id")
+	boardID, err := strconv.ParseInt(c.Param("board_id"), 10, 64)
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "invalid board id")
+		return
+	}
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
-	tasks, err := h.taskUsecase.GetAll(userID, page, limit)
+	tasks, err := h.taskUsecase.GetAll(userID, boardID, page, limit)
 	if err != nil {
 		response.Error(c, http.StatusInternalServerError, err.Error())
 		return

@@ -14,15 +14,14 @@ func NewTaskUsecase(taskRepo domain.TaskRepository) domain.TaskUsecase {
 	return &taskUsecase{taskRepo}
 }
 
-func (u *taskUsecase) GetAll(userID int64, page, limit int) ([]domain.Task, error) {
+func (u *taskUsecase) GetAll(userID, boardID int64, page, limit int) ([]domain.Task, error) {
 	if page <= 0 {
 		page = 1
 	}
-
 	if limit <= 0 || limit > 100 {
 		limit = 10
 	}
-	return u.taskRepo.FindAll(userID, page, limit)
+	return u.taskRepo.FindAll(userID, boardID, page, limit)
 }
 
 func (u *taskUsecase) GetByID(id, userID int64) (*domain.Task, error) {

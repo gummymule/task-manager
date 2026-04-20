@@ -60,9 +60,9 @@ func (_m *TaskRepository) Delete(id int64, userID int64) error {
 	return r0
 }
 
-// FindAll provides a mock function with given fields: userID, page, limit
-func (_m *TaskRepository) FindAll(userID int64, page int, limit int) ([]domain.Task, error) {
-	ret := _m.Called(userID, page, limit)
+// FindAll provides a mock function with given fields: userID, boardID, page, limit
+func (_m *TaskRepository) FindAll(userID int64, boardID int64, page int, limit int) ([]domain.Task, error) {
+	ret := _m.Called(userID, boardID, page, limit)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindAll")
@@ -70,19 +70,19 @@ func (_m *TaskRepository) FindAll(userID int64, page int, limit int) ([]domain.T
 
 	var r0 []domain.Task
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int64, int, int) ([]domain.Task, error)); ok {
-		return rf(userID, page, limit)
+	if rf, ok := ret.Get(0).(func(int64, int64, int, int) ([]domain.Task, error)); ok {
+		return rf(userID, boardID, page, limit)
 	}
-	if rf, ok := ret.Get(0).(func(int64, int, int) []domain.Task); ok {
-		r0 = rf(userID, page, limit)
+	if rf, ok := ret.Get(0).(func(int64, int64, int, int) []domain.Task); ok {
+		r0 = rf(userID, boardID, page, limit)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.Task)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(int64, int, int) error); ok {
-		r1 = rf(userID, page, limit)
+	if rf, ok := ret.Get(1).(func(int64, int64, int, int) error); ok {
+		r1 = rf(userID, boardID, page, limit)
 	} else {
 		r1 = ret.Error(1)
 	}

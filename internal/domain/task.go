@@ -5,6 +5,7 @@ import "time"
 type Task struct {
 	ID          int64     `json:"id" db:"id"`
 	UserID      int64     `json:"user_id" db:"user_id"`
+	BoardID     int64     `json:"board_id" db:"board_id"`
 	Title       string    `json:"title" db:"title"`
 	Description string    `json:"description" db:"description"`
 	Status      string    `json:"status" db:"status"`
@@ -13,7 +14,7 @@ type Task struct {
 }
 
 type TaskRepository interface {
-	FindAll(userID int64, page, limit int) ([]Task, error)
+	FindAll(userID, boardID int64, page, limit int) ([]Task, error)
 	FindByID(id, userID int64) (*Task, error)
 	Create(task *Task) (*Task, error)
 	Update(task *Task) (*Task, error)
@@ -21,7 +22,7 @@ type TaskRepository interface {
 }
 
 type TaskUsecase interface {
-	GetAll(userID int64, page, limit int) ([]Task, error)
+	GetAll(userID, boardID int64, page, limit int) ([]Task, error)
 	GetByID(id, userID int64) (*Task, error)
 	Create(task *Task) (*Task, error)
 	Update(task *Task) (*Task, error)

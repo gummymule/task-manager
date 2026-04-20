@@ -13,17 +13,17 @@ func NewTaskRepository(db *sqlx.DB) domain.TaskRepository {
 	return &taskRepository{db}
 }
 
-func (r *taskRepository) FindAll(userID int64, page, limit int) ([]domain.Task, error) {
+func (r *taskRepository) FindAll(userID, boardID int64, page, limit int) ([]domain.Task, error) {
 	tasks := []domain.Task{}
 	offset := (page - 1) * limit
 	query := `
-		SELECT id, user_id, title, description, status, create_at, update_at
+		SELECT id, user_id, board_id, title, description, status, created_at, updated_at
 		FROM tasks
-		WHERE user_id = $1
-		ORDER BY create_at DESC
-		LIMIT $2 OFFSET $3
+		WHERE user_id = $1 AND board_id = $2
+		ORDER BY created_at DESC
+		LIMIT $3 OFFSET $4
 	`
-	err := r.db.Select(&tasks, query, userID, limit, offset)
+	err := r.db.Select(&tasks, query, userID, boardID, limit, offset)
 	return tasks, err
 }
 
@@ -43,12 +43,12 @@ func (r *taskRepository) FindByID(id, userID int64) (*domain.Task, error) {
 
 func (r *taskRepository) Create(task *domain.Task) (*domain.Task, error) {
 	query := `
-		INSERT INTO tasks (user_id, title, description, status)
-		VALUES ($1, $2, $3, $4)
-		RETURNING id, user_id, title, description, status, create_at, update_at
+		INSERT INTO tasks (user_id, board_id, title, description, status)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id, user_id, board_id, title, description, status, created_at, updated_at
 	`
 	result := &domain.Task{}
-	err := r.db.QueryRowx(query, task.UserID, task.Title, task.Description, task.Status).StructScan(result)
+	err := r.db.QueryRowx(query, task.UserID, task.BoardID, task.Title, task.Description, task.Status).StructScan(result)
 	if err != nil {
 		return nil, err
 	}
