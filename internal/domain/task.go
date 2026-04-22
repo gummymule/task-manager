@@ -9,8 +9,8 @@ type Task struct {
 	Title       string    `json:"title" db:"title"`
 	Description string    `json:"description" db:"description"`
 	Status      string    `json:"status" db:"status"`
-	CreateAt    time.Time `json:"create_at" db:"create_at"`
-	UpdateAt    time.Time `json:"update_at" db:"update_at"`
+	CreatedAt   time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
 }
 
 type TaskRepository interface {

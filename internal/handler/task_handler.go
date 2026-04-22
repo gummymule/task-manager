@@ -87,6 +87,12 @@ func (h *TaskHandler) GetByID(c *gin.Context) {
 // @Router       /tasks [post]
 func (h *TaskHandler) Create(c *gin.Context) {
 	userID := c.GetInt64("user_id")
+	boardID, err := strconv.ParseInt(c.Param("board_id"), 10, 64)
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, "invalid board id")
+		return
+	}
+
 	var task domain.Task
 	if err := c.ShouldBindJSON(&task); err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid request body")
@@ -94,6 +100,7 @@ func (h *TaskHandler) Create(c *gin.Context) {
 	}
 
 	task.UserID = userID
+	task.BoardID = boardID
 	result, err := h.taskUsecase.Create(&task)
 	if err != nil {
 		response.Error(c, http.StatusBadRequest, err.Error())

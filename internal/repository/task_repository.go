@@ -30,7 +30,7 @@ func (r *taskRepository) FindAll(userID, boardID int64, page, limit int) ([]doma
 func (r *taskRepository) FindByID(id, userID int64) (*domain.Task, error) {
 	task := &domain.Task{}
 	query := `
-		SELECT id, user_id, title, description, status, create_at, update_at
+		SELECT id, user_id, title, description, status, created_at, updated_at
 		FROM tasks
 		WHERE id = $1 AND user_id = $2
 	`
@@ -58,9 +58,9 @@ func (r *taskRepository) Create(task *domain.Task) (*domain.Task, error) {
 func (r *taskRepository) Update(task *domain.Task) (*domain.Task, error) {
 	query := `
 		UPDATE tasks 
-		SET title = $1, description = $2, status = $3, update_at = NOW()
+		SET title = $1, description = $2, status = $3, updated_at = NOW()
 		WHERE id = $4 AND user_id = $5
-		RETURNING id, user_id, title, description, status, create_at, update_at
+		RETURNING id, user_id, board_id, title, description, status, created_at, updated_at
 	`
 	result := &domain.Task{}
 	err := r.db.QueryRowx(query, task.Title, task.Description, task.Status, task.ID, task.UserID).StructScan(result)

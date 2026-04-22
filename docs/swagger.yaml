@@ -1,7 +1,24 @@
 basePath: /api/v1
 definitions:
+  domain.Board:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   domain.Task:
     properties:
+      board_id:
+        type: integer
       create_at:
         type: string
       description:
@@ -47,6 +64,133 @@ info:
   title: Task Manager API
   version: "1.0"
 paths:
+  /boards:
+    get:
+      description: Get all boards for authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all boards
+      tags:
+      - boards
+    post:
+      consumes:
+      - application/json
+      description: Create a new board for authenticated user
+      parameters:
+      - description: Board data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Board'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create new board
+      tags:
+      - boards
+  /boards/{id}:
+    delete:
+      description: Delete an existing board
+      parameters:
+      - description: Board ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete board
+      tags:
+      - boards
+    get:
+      description: Get a specific board by ID
+      parameters:
+      - description: Board ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get board by ID
+      tags:
+      - boards
+    put:
+      consumes:
+      - application/json
+      description: Update an existing board
+      parameters:
+      - description: Board ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Board data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Board'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update board
+      tags:
+      - boards
   /login:
     post:
       consumes:

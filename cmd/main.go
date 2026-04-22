@@ -41,12 +41,15 @@ func main() {
 	// Init layers (repository → usecase → handler)
 	userRepo := repository.NewUserRepository(db)
 	taskRepo := repository.NewTaskRepository(db)
+	boardRepo := repository.NewBoardRepository(db)
 
 	userUsecase := usecase.NewUserUsecase(userRepo, cfg.JWTSecret)
 	taskUsecase := usecase.NewTaskUsecase(taskRepo)
+	boardUsecase := usecase.NewBoardUsecase(boardRepo)
 
 	userHandler := handler.NewUserHandler(userUsecase)
 	taskHandler := handler.NewTaskHandler(taskUsecase)
+	boardHandler := handler.NewBoardHandler(boardUsecase)
 
 	// Init router
 	r := gin.Default()
@@ -71,11 +74,27 @@ func main() {
 	auth.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 	{
 		auth.POST("/logout", userHandler.Logout)
-		auth.GET("/tasks", taskHandler.GetAll)
-		auth.GET("/tasks/:id", taskHandler.GetByID)
-		auth.POST("/tasks", taskHandler.Create)
-		auth.PUT("/tasks/:id", taskHandler.Update)
-		auth.DELETE("/tasks/:id", taskHandler.Delete)
+
+		// Board routes
+		auth.GET("/boards", boardHandler.GetAll)
+		auth.GET("/boards/:board_id", boardHandler.GetByID)
+		auth.POST("/boards", boardHandler.Create)
+		auth.PUT("/boards/:board_id", boardHandler.Update)
+		auth.DELETE("/boards/:board_id", boardHandler.Delete)
+
+		// Task routes
+		boards := auth.Group("/boards/:board_id")
+		{
+			boards.GET("/tasks", taskHandler.GetAll)
+			boards.POST("/tasks", taskHandler.Create)
+		}
+
+		tasks := auth.Group("/tasks")
+		{
+			tasks.GET("/:id", taskHandler.GetByID)
+			tasks.PUT("/:id", taskHandler.Update)
+			tasks.DELETE("/:id", taskHandler.Delete)
+		}
 	}
 
 	// Swagger routes
